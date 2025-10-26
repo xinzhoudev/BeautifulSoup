@@ -1,4 +1,8 @@
-Project Title: Part-2: Find the location.
+Project Title: 
+
+
+
+Part-2: Find the location.
 
 Description: Find the location of the functions used in milestone1 and part-1 of milestone2.
 
@@ -20,11 +24,25 @@ Description: Find the location of the functions used in milestone1 and part-1 of
 
 
 
-Modify in BS4:
+Part-3: Modify in BS4:
 
-\_\_init\_\_: add the SoupReplacer() class, and the new parameter replacer.
+\_\_init\_\_: add the SoupReplacer() class(It contains \_\_init\_\_ and replace() methods), and the new parameter replacer.
+
+&nbsp;   1. class SoupReplacer(): line 132 in bs4/\_\_init\_\_.py
+
+&nbsp;   2. SoupReplacer.\_\_init\_\_(): line 133 in bs4/\_\_init\_\_.py
+
+&nbsp;   3. SoupReplacer.replace(): line 136 in bs4/\_\_init\_\_.py
 
 Builder/\_lxml.py: modify the start() and end() method.
 
-Builder/\_htmlparser.py: handle\_starttag() and handle\_endtag()
+&nbsp;   1. start(): tag = self.soup.replacer.replace(tag): line 394 in bs4/builder/\_lxml.py
+
+&nbsp;   2. end(): name = self.soup.replacer.replace(name): line 429 in bs4/builder/\_lxml.py
+
+Builder/\_htmlparser.py: handle\_starttag() and handle\_endtag().
+
+&nbsp;   1. handle\_starttag(): name = self.soup.replacer.replace(name): line 183 in bs4/builder/\_htmlparser.py
+
+&nbsp;   2. handle\_endtag(): name = self.soup.replacer.replace(name): line 217 in bs4/builder/\_htmlparser.py
 
