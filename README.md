@@ -8,7 +8,7 @@ First, build a repository in GitHub: BeautifulSoup, and copy its path https://gi
 
 Second, push files to the repository:
 
-1. Find out the correct directory in my computer: it is F:\\UCIrvine-MSWE\\Courses\\ProgrammingStyles\\Milestone2\\beautifulsoup
+1. Find out the correct directory in my computer;(It depends on the specific file path of the computer)
 2. git init : initiate the directory.
 3. git remote add origin https://github.com/xinzhoudev/BeautifulSoup.git
 4. git status: To check the current status of the directory: it should be "branch master", which means it is the master branch.

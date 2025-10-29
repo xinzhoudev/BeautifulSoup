@@ -1,4 +1,5 @@
 # Task-2: Print out all the hyperlinks (<a> tags).
+
 import sys, os
 # clear the "bs4" mod that has been imported before.
 bs4_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
