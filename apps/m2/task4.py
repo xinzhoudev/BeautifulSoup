@@ -17,9 +17,8 @@ filename = "HackerNews.html"
 id_strainer = SoupStrainer(attrs={"id": True})
 
 with open(filename, "r", encoding="utf-8") as f:
-    content = f.read()
-    if(filename.lower().endswith(".html")): soup = BeautifulSoup(content, "html.parser", parse_only=id_strainer)
-    elif(filename.lower().endswith(".xml")): soup = BeautifulSoup(content, "lxml-xml", parse_only=id_strainer)
+    if(filename.lower().endswith(".html")): soup = BeautifulSoup(f, "html.parser", parse_only=id_strainer)
+    elif(filename.lower().endswith(".xml")): soup = BeautifulSoup(f, "lxml-xml", parse_only=id_strainer)
 
 for tag in soup.find_all(True):  
     tag_id = tag.get("id")
