@@ -1,4 +1,4 @@
-# Print out all the tags in the document.
+# Task-3: Print out all the tags in the document.
 
 import sys, os
 # clear the "bs4" mod that has been imported before.
@@ -14,7 +14,8 @@ from bs4 import BeautifulSoup, SoupStrainer, SoupReplacer
 # filename = "psd7003.xml"
 filename = "HackerNews.html"
 
-# get all the tags. 
+# get all the tags.
+# The soupReplacer cannot be replaced.
 all_tags = SoupStrainer()
 with open(filename, "r", encoding = "utf-8") as f:
     if(filename.lower().endswith(".html")): soup = BeautifulSoup(f, "html.parser", parse_only=all_tags)

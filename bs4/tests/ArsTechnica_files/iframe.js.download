@@ -1,0 +1,198 @@
+(function ($, window, document, _undefined) {
+  // If hash is not #comments, but URL has query param comments, redirect to #comments
+  const urlParams = new URLSearchParams(window.location.search);
+
+  // If urlParams contains any parameter with comments, redirect to #comments
+  if (urlParams.toString().indexOf("comments") !== -1) {
+    window.location.hash = "comments";
+  }
+
+  // Ensure we target links within the actual story
+  $("body.single article.post .view-comments").on("click", initIframe);
+
+  // If the URL has #comments, load the iframe
+  if (
+    $(".xf_thread_iframe_container").data("open") == "1" ||
+    window.location.hash == "#comments" ||
+    window.location.hash == "#respond"
+  ) {
+    initIframe();
+  }
+
+  function initIframe() {
+    var loaded = false;
+    var scrollInit = false;
+    var postPositions;
+    var postPositionScroller;
+    var jumpToPost = false;
+
+    $(".xf_thread_iframe_loading").show();
+    $(".comments-wrapper").removeClass("hidden");
+
+    let iframe = $("<iframe />", {
+      id: "xf_thread_iframe",
+      src: $(".xf_thread_iframe_container").data("url"),
+      frameborder: "0",
+      width: "100%",
+    });
+
+    $(".xf_thread_iframe_container").append(iframe);
+
+    function setPostOnScroll() {
+      //console.log('setPostOnScroll');
+      $(window).scroll(function () {
+        if (postPositionScroller) {
+          clearTimeout(postPositionScroller);
+        }
+        let iframeOffset =
+          jQuery("html").scrollTop() -
+          $(".xf_thread_iframe_container").offset().top +
+          100;
+        localStorage.removeItem("wp_connect_scroll_post");
+        for (let i in postPositions) {
+          if (iframeOffset > postPositions[i].position) {
+            postPositionScroller = setTimeout(function () {
+              //console.log('set post ' + postPositions[i].post);
+              let threadId = $(".xf_thread_iframe_container").data("threadId");
+              let url = new URL(window.location);
+              let pageId = url.searchParams.get("comments-page");
+              localStorage.setItem(
+                "wp_connect_scroll_post",
+                threadId + "_" + pageId + "_" + postPositions[i].post
+              );
+            }, 500);
+            break;
+          }
+        }
+      });
+    }
+
+    iframeResize(
+      {
+        license: "GPLv3",
+        heightCalculationMethod: "taggedElement",
+        onReady: function (iframe) {
+          $(".xf_thread_iframe_container").css({
+            visibility: "visible",
+          });
+
+          $(".xf_thread_iframe_loading").remove();
+
+          let url = new URL(window.location);
+          if (url.searchParams.get("post")) {
+            jumpToPost = true;
+          }
+
+          // console.log('parent onInit');
+          // iframe.iFrameResizer.sendMessage('parent onInit message');
+
+          setTimeout(
+            function () {
+              let wpConnectScrollPost = localStorage.getItem(
+                "wp_connect_scroll_post"
+              );
+              if (wpConnectScrollPost) {
+                if (!jumpToPost) {
+                  let url = new URL(window.location);
+                  let wpConnectScrollPostParts = wpConnectScrollPost.split("_");
+                  // console.log(wpConnectScrollPostParts);
+                  // console.log($('.xf_thread_iframe_container').data('threadId'));
+                  // console.log(url.searchParams.get('comments-page'));
+                  if (
+                    wpConnectScrollPostParts[0] ==
+                      $(".xf_thread_iframe_container").data("threadId") &&
+                    wpConnectScrollPostParts[1] ==
+                      url.searchParams.get("comments-page")
+                  ) {
+                    iframe.iFrameResizer.sendMessage({
+                      getPostPosition: wpConnectScrollPostParts[2],
+                    });
+
+                    return;
+                  }
+                }
+              }
+            },
+            loaded ? 50 : 1050
+          );
+
+          loaded = true;
+        },
+        onResized: function (data) {
+          // console.log('parent onResized');
+          data.iframe.iFrameResizer.sendMessage({ resized: true });
+        },
+        onMessage: function (data) {
+          // console.log('parent onMessage');
+          // console.log(data.message);
+
+          if (data.message.navigate) {
+            console.log("parent navigate");
+            window.location = data.message.navigate;
+          }
+
+          if (data.message.postPositions) {
+            postPositions = data.message.postPositions;
+          }
+
+          if (data.message.addReply) {
+            // console.log('parent addReply');
+            data.message.offset =
+              data.message.addReply.offset -
+              ($(window).height() - data.message.addReply.height) +
+              100;
+
+            let url = new URL(window.location);
+            url.searchParams.delete("comments-page");
+            url.searchParams.delete("add-reply");
+            window.history.pushState({}, "", url);
+          }
+
+          if (data.message.page) {
+            // console.log('data.message.page');
+            let url = new URL(window.location);
+            url.searchParams.delete("unread");
+            url.searchParams.set("comments-page", data.message.page);
+            if (loaded) {
+              url.searchParams.delete("post");
+            }
+            // console.log('data.message.page pushState');
+            window.history.pushState({}, "", url);
+            // console.log('data.message.page ' + url.searchParams.get('comments-page'));
+            // Quick scroll to anchor #comments
+            $("html, body").animate(
+              {
+                scrollTop: $(".xf_thread_iframe_container").offset().top,
+              },
+              200
+            );
+          }
+
+          if (data.message.offset) {
+            let offset = $(".xf_thread_iframe_container").offset();
+            let newOffset = offset.top + data.message.offset;
+            newOffset -= 50;
+            setTimeout(
+              function () {
+                $("html, body").animate(
+                  {
+                    scrollTop: newOffset,
+                  },
+                  200,
+                  function () {
+                    if (!scrollInit) {
+                      setPostOnScroll();
+                      scrollInit = true;
+                    }
+                  }
+                );
+              },
+              loaded ? 10 : 1000
+            );
+          }
+        },
+      },
+      "#xf_thread_iframe"
+    );
+  }
+})(jQuery, window, document);

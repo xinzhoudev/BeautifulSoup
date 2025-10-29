@@ -1,4 +1,4 @@
-# Print out all the tags that have an id attribute. (this should be done with a single API call)
+# Task-4: Print out all the tags that have an id attribute. (this should be done with a single API call)
 import sys, os
 # clear the "bs4" mod that has been imported before.
 bs4_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
