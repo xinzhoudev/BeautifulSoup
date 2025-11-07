@@ -130,15 +130,28 @@ from bs4._warnings import (
 )
 
 class SoupReplacer:
-    def __init__(self, og_tag, alt_tag):
-        self.og_tag = og_tag
-        self.alt_tag = alt_tag
-    def replace(self, tag):
+    def __init__(self, name_xformer = None, attrs_xformer = None, xformer = None):
+        self.name_xformer = name_xformer
+        self.attrs_xformer = attrs_xformer
+        self.xformer = xformer
+    def apply(self, tag, attr):
+        if isinstance(tag, Tag):
+            if self.name_xformer:
+                tag = self.name_xformer(tag)
+                # print("result", tag)
+            if self.attrs_xformer:
+                tag = self.attrs_xformer(tag)
+            if self.xformer:
+                tag = self.xformer(tag)
+            return tag
         if isinstance(tag, str):
-            return self.alt_tag if tag == self.og_tag else tag
-        else:
-            if tag.name == self.og_tag:
-                tag.name = self.alt_tag
+            if self.name_xformer:
+                tag = self.name_xformer(tag)
+            if self.attrs_xformer:
+                attr = self.attrs_xformer(tag, attr)
+            if self.xformer:
+                tag, attr = self.xformer(tag, attr)
+            return tag
 
 class BeautifulSoup(Tag):
     """A data structure representing a parsed HTML or XML document.
@@ -379,7 +392,6 @@ class BeautifulSoup(Tag):
                     % ",".join(features)
                 )
             builder_class = possible_builder_class
-	
 
         # At this point either we have a TreeBuilder instance in
         # builder, or we have a builder_class that we can instantiate

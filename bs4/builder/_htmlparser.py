@@ -179,11 +179,12 @@ class BeautifulSoupHTMLParser(HTMLParser, DetectsXMLParsedAsHTML):
             sourceline, sourcepos = self.getpos()
         else:
             sourceline = sourcepos = None
-        if self.soup.replacer:
-            name = self.soup.replacer.replace(name)
+        
         tag = self.soup.handle_starttag(
             name, None, None, attr_dict, sourceline=sourceline, sourcepos=sourcepos
         )
+        if self.soup.replacer:
+            self.soup.replacer.apply(tag, {})
 
         if tag and tag.is_empty_element and handle_empty_element:
             # Unlike other parsers, html.parser doesn't send separate end tag
@@ -213,8 +214,6 @@ class BeautifulSoupHTMLParser(HTMLParser, DetectsXMLParsedAsHTML):
            e.g. '<tag></tag>'.
         """
         # print("END", name)
-        if self.soup.replacer:
-            name = self.soup.replacer.replace(name)
         if check_already_closed and name in self.already_closed_empty_element:
             # This is a redundant end tag for an empty-element tag.
             # We've already called handle_endtag() for it, so just
@@ -223,6 +222,7 @@ class BeautifulSoupHTMLParser(HTMLParser, DetectsXMLParsedAsHTML):
             self.already_closed_empty_element.remove(name)
         else:
             self.soup.handle_endtag(name)
+        
 
     def handle_data(self, data: str) -> None:
         """Handle some textual data that shows up between tags."""

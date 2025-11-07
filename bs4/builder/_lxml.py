@@ -390,8 +390,8 @@ class LXMLTreeBuilderForXML(TreeBuilder):
 
         namespace, tag = self._getNsTag(tag)
         nsprefix = self._prefix_for_namespace(namespace)
-        if getattr(self.soup, "replacer", None):
-            tag = self.soup.replacer.replace(tag)
+        if self.soup.replacer:
+            tag = self.soup.replacer.apply(tag, final_attrs)
         self.soup.handle_starttag(
             tag,
             namespace,
@@ -399,6 +399,7 @@ class LXMLTreeBuilderForXML(TreeBuilder):
             final_attrs,
             namespaces=self.active_namespace_prefixes[-1],
         )
+        
 
     def _prefix_for_namespace(
         self, namespace: Optional[_NamespaceURL]
@@ -423,10 +424,8 @@ class LXMLTreeBuilderForXML(TreeBuilder):
                 if inverted_nsmap is not None and namespace in inverted_nsmap:
                     nsprefix = inverted_nsmap[namespace]
                     break
-        
-
-        if getattr(self.soup, "replacer", None):
-            name = self.soup.replacer.replace(name)
+        if self.soup.replacer:
+            name = self.soup.replacer.apply(name, {})
         self.soup.handle_endtag(name, nsprefix)
         if len(self.nsmaps) > 1:
             # This tag, or one of its parents, introduced a namespace
