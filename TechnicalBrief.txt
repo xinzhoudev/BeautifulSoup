@@ -1,0 +1,62 @@
+Technical Brief: Thoughts on SoupReplacer API from Milestone 2 to Milestone 3
+1. Overview
+
+In Milestone 2, the SoupReplacer API provides only a minimal capability: replacing a tag’s name. In Milestone 3, the API is significantly expanded, enabling transformations on tag names (name_xformer), attributes (attr_xformer), and arbitrary operations (xformer). These enhancements introduce greater flexibility and extensibility, making the API more suitable for complex or evolving use cases.
+
+2. Milestone 2 – Evaluation
+
+Capabilities
+
+Supports only tag name replacement.
+
+Advantages
+
+Simple and easy to understand.
+
+Minimal implementation overhead.
+
+Limitations
+
+Limited applicability: unable to modify attributes or execute more complex structural transformations.
+
+Hard to compose or reuse across different transformation workflows.
+
+3. Milestone 3 – Evaluation
+
+Capabilities Added
+
+name_xformer: replaces tag names.
+
+attr_xformer: transforms or filters attributes.
+
+xformer: general-purpose hook allowing arbitrary manipulation on tag objects.
+
+Advantages
+
+Highly flexible: arbitrary operations allow users to customize transformations beyond naming or attribute manipulation.
+
+Composable: xformer can subsume both name_xformer and attr_xformer, so developers can unify logic within one generalized transformation.
+
+Extensible: easier to integrate with downstream processing stages, e.g., structural rewrites, tag normalization, or schema migrations.
+
+Trade-offs
+
+More complex API surface.
+
+Requires careful documentation to avoid misuse or overly complex transformer logic.
+
+4. Recommendation
+
+I recommend adopting the general xformer approach as the primary API surface. Compared with dedicated name_xformer and attr_xformer, xformer offers better extensibility and future-proofing:
+
+It already covers the functionality of name and attribute transformers.
+
+It enables arbitrary transformation, allowing the API to support advanced use cases without redesign.
+
+Users can implement both simple and complex logic with uniform entry points, reducing conceptual overhead for long-term maintenance.
+
+We may keep name_xformer and attr_xformer as convenience wrappers for common operations, but the core design should emphasize xformer as the canonical extension mechanism. This makes the API easier to scale if future milestones introduce additional transformation targets (e.g., text nodes, comments, or structural restructuring).
+
+5. Conclusion
+
+Milestone 2 provides a minimal but limited mechanism for tag name replacement. Milestone 3 introduces significantly enhanced capability, particularly through xformer, enabling a broad class of transformation workflows. For extending BeautifulSoup, the xformer-centric design offers the most flexible, extensible, and maintainable path forward.
