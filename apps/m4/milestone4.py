@@ -20,7 +20,7 @@ with open(filename, "r", encoding = "utf-8") as f:
 # print all nodes.
 print("*****************************get all of the nodes*****************************")
 for node in soup:
-    if(isinstance(node, Tag):
+    if(isinstance(node, Tag)):
         print(node)
 
 print("*****************************get person nodes*****************************")
@@ -53,5 +53,36 @@ filename = "HackerNews.html"
 with open(filename, "r", encoding = "utf-8") as f:
     if(filename.lower().endswith(".html")): soup = BeautifulSoup(f, "html.parser")
     elif(filename.lower().endswith(".xml")): soup = BeautifulSoup(f, "lxml-xml")
+
+# print all nodes.
+print("*****************************get all of the nodes*****************************")
+for node in soup:
+    if(isinstance(node, Tag)):
+        print(node)
+
+print("*****************************get html nodes*****************************")
+# simple test node, get html node.
+for node in soup:
+    if node.name == "html":
+        print(node)
+
+print("*****************************get body nodes*****************************")
+# test node, get p node.
+for node in soup:
+    if node.name == "body":
+        print(node)
+
+print("*****************************get div nodes*****************************")
+# test node, get br node.
+for node in soup:
+    if node.name == "div":
+        print(node)
+
+print("*****************************get a nodes*****************************")
+# test node
+for node in soup:
+    if node.name == "a":
+        print(node)
+
 
 
